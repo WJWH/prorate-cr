@@ -1,6 +1,8 @@
-# prorate
+# Prorate
 
-TODO: Write a description here
+Prorate is a throttling/rate limiting library based on the [Leaky Bucket algorithm](https://en.wikipedia.org/wiki/Leaky_bucket) implemented as a Lua script in Redis. This enables coordinated throttling of traffic coming into many different web servers, which is much more tricky with an in-process implementation. The algorithm is designed in such a way as to keep Redis memory use as minimal as possible.
+
+There is also a Ruby version of Prorate available [here](https://github.com/WeTransfer), made and maintained by the lovely people at WeTransfer.
 
 ## Installation
 
@@ -22,7 +24,7 @@ TODO: Write usage instructions here
 
 ## Development
 
-TODO: Write development instructions here
+Running the test suite requires a running Redis server. You can override the 
 
 ## Contributing
 
@@ -34,4 +36,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [[your-github-name]](https://github.com/[your-github-name]) Wander Hillen - creator, maintainer
+- [wjwh](https://github.com/wjwh) Wander Hillen - creator, maintainer
