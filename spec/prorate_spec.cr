@@ -15,5 +15,22 @@ describe Prorate do
     end
   end
   
+  context "adding identifiers" do   
+    it "remembers identifiers added in order" do
+      t = Prorate::Throttle.new("test")
+      t << "foo"
+      t << "bar"
+      t << "hatch"
+      t.discriminators.should eq(["foo", "bar", "hatch"])
+    end
+  end
+  
+  context "Throttled exception" do
+    it "carries around the time until the action becomes unblocked" do
+      e = Prorate::Throttled.new(10)
+      e.retry_in_seconds.should eq(10)
+      e.message.should contain("10")
+    end
+  end
 end
 
