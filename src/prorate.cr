@@ -44,10 +44,10 @@ module Prorate
       @discriminators << discriminator
     end
 
-    def throttle!()
+    def throttle!
       digest = Digest::SHA1.hexdigest(@discriminators.join(""))
       identifier = [name, digest].join(":")
-      remaining_block_time, bucket_level = redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, bucket_capacity, leak_rate, block_for])
+      remaining_block_time, bucket_level = redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, @bucket_capacity, @leak_rate, @block_for])
       raise Throttled.new(remaining_block_time) if remaining_block_time > 0
     rescue ex : Redis::Error
       if e.message.include? "NOSCRIPT"
@@ -56,7 +56,7 @@ module Prorate
         script = File.read(script_filepath)
         raise ScriptHashMismatch if Digest::SHA1.hexdigest(script) != CURRENT_SCRIPT_HASH
         redis.script_load(script)
-        redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, bucket_capacity, leak_rate, block_for])
+        redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, @bucket_capacity, @leak_rate, @block_for])
       else
         raise e
       end
