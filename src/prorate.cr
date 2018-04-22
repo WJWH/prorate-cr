@@ -21,7 +21,6 @@ module Prorate
   class MisconfiguredThrottle < Exception
   end
 
-
   def self.get_script_hash
     script_filepath = File.join(__DIR__,"prorate","rate_limit.lua")
     script = File.read(script_filepath)
@@ -33,7 +32,11 @@ module Prorate
   class Throttle
     getter discriminators
     
-    def initialize(@name : String)
+    def initialize(name : String, bucket_capacity : Int32, leak_rate : Int32, block_for : Int32)
+      @name = name
+      @bucket_capacity = bucket_capacity
+      @leak_rate = leak_rate
+      @block_for = block_for
       @discriminators = [] of String
     end
 
@@ -44,7 +47,19 @@ module Prorate
     def throttle!()
       digest = Digest::SHA1.hexdigest(@discriminators.join(""))
       identifier = [name, digest].join(":")
-      redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, bucket_capacity, leak_rate, block_for])
+      remaining_block_time, bucket_level = redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, bucket_capacity, leak_rate, block_for])
+      raise Throttled.new(remaining_block_time) if remaining_block_time > 0
+    rescue ex : Redis::Error
+      if e.message.include? "NOSCRIPT"
+        # The Redis server has never seen this script before. Needs to run only once in the entire lifetime of the Redis server (unless the script changes)
+        script_filepath = File.join(__DIR__,"prorate","rate_limit.lua")
+        script = File.read(script_filepath)
+        raise ScriptHashMismatch if Digest::SHA1.hexdigest(script) != CURRENT_SCRIPT_HASH
+        redis.script_load(script)
+        redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, bucket_capacity, leak_rate, block_for])
+      else
+        raise e
+      end
     end
 
   end
