@@ -17,7 +17,7 @@ describe Prorate do
   
   context "adding identifiers" do   
     it "remembers identifiers added in order" do
-      t = Prorate::Throttle.new("test")
+      t = Prorate::Throttle.new(name: "test", bucket_capacity: 10, leak_rate: 10, block_for: 120)
       t << "foo"
       t << "bar"
       t << "hatch"
