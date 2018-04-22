@@ -1,6 +1,11 @@
 name: prorate
 version: 0.1.0
 
+dependencies:
+  redis:
+    github: stefanwille/crystal-redis
+    version: ~> 1.9.0
+
 authors:
   - Wander Hillen <wjw.hillen@gmail.com>
 
