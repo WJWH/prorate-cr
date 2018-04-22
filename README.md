@@ -24,7 +24,7 @@ TODO: Write usage instructions here
 
 ## Development
 
-Running the test suite requires a running Redis server. You can override the 
+Running the test suite requires a running Redis server. By default it will try the default location (ie `localhost:6379`), but you can override this by supplying a `REDIS_URL` environment variable if you want to test against a redis server in another location.
 
 ## Contributing
 
