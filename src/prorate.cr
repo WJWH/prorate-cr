@@ -58,7 +58,7 @@ module Prorate
         script = File.read(script_filepath)
         raise ScriptHashMismatch.new if Digest::SHA1.hexdigest(script) != CURRENT_SCRIPT_HASH
         @redis.script_load(script)
-        @redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, @bucket_capacity, @leak_rate, @block_for])
+        throttle!
       else
         raise ex
       end
