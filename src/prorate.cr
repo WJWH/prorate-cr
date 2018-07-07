@@ -32,13 +32,13 @@ module Prorate
   class Throttle
     getter discriminators
     
-    def initialize(name : String, bucket_capacity : Int32, leak_rate : Int32, block_for : Int32)
+    def initialize(name : String, bucket_capacity : Int32, leak_rate : Int32, block_for : Int32, redis : Redis::PooledClient = Redis::PooledClient.new)
       @name = name
       @bucket_capacity = bucket_capacity
       @leak_rate = leak_rate
       @block_for = block_for
       @discriminators = [] of String
-      @redis = Redis.new
+      @redis = redis
     end
 
     def <<(discriminator : String)
