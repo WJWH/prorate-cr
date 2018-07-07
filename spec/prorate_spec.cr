@@ -72,7 +72,6 @@ describe Prorate do
         t.throttle!
       end
 
-      p bucket_key
       # We are not blocked yet, the bucket keys should be set but no block key
       r.get(bucket_key).should_not be_nil
       r.get(last_updated_key).should_not be_nil
