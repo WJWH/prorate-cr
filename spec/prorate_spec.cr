@@ -32,5 +32,15 @@ describe Prorate do
       e.message.should contain("10")
     end
   end
+  
+  context "when throttling" do
+    Spec.before_each do
+      Redis.new.flushall
+    end
+    
+    pending "allows calls if the bucket is not yet full" {}
+    pending "raises a Throttled exception if the bucket is full" {}
+    pending "does not keep keys around for longer than necessary" {}
+  end
 end
 

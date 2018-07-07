@@ -1,1 +1,12 @@
 language: crystal
+crystal:
+  - latest
+
+services:
+- redis
+
+dist: trusty # https://docs.travis-ci.com/user/trusty-ci-environment/
+sudo: false
+
+script:
+- crystal spec
