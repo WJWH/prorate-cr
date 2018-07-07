@@ -63,6 +63,12 @@ module Prorate
         raise ex
       end
     end
+  end
 
+  # A small convenience method:
+  def with_throttle(name : String, bucket_capacity : Int32, leak_rate : Int32, block_for : Int32)
+    t = Prorate::Throttle.new(name: name, bucket_capacity: bucket_capacity, leak_rate: leak_rate, block_for: block_for)
+    yield t
+    return t.throttle!
   end
 end
