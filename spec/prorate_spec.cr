@@ -40,6 +40,7 @@ describe Prorate do
     
     pending "allows calls if the bucket is not yet full" {}
     pending "raises a Throttled exception if the bucket is full" {}
+    pending "after the cooldown has passed, allows calls again" {}
     pending "does not keep keys around for longer than necessary" {}
   end
 end
