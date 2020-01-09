@@ -9,6 +9,6 @@ dependencies:
 authors:
   - Wander Hillen <wjw.hillen@gmail.com>
 
-crystal: 0.24.2
+crystal: 0.30.1
 
 license: MIT
