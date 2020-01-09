@@ -20,6 +20,9 @@ module Prorate
 
   class MisconfiguredThrottle < Exception
   end
+  
+  class RedisConnectionError < Exception
+  end
 
   def self.get_script_hash
     script_filepath = File.join(__DIR__,"prorate","rate_limit.lua")
@@ -48,8 +51,10 @@ module Prorate
     def throttle!
       digest = Digest::SHA1.hexdigest(@discriminators.join(""))
       identifier = [@name, digest].join(":")
-      remaining_block_time, bucket_level = @redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, @bucket_capacity, @leak_rate, @block_for])
-      raise Throttled.new(remaining_block_time.as(Int64)) if remaining_block_time.as(Int64) > 0
+      response = @redis.evalsha(CURRENT_SCRIPT_HASH, [] of String, [identifier, @bucket_capacity, @leak_rate, @block_for]).as(Array((Redis::RedisValue)))
+      # response is an array shaped like: [remaining_block_time, bucket_level]
+      remaining_block_time_64 = response[0].as(Int64)
+      raise Throttled.new(remaining_block_time_64) if remaining_block_time_64 > 0
       return nil
     rescue ex : Redis::Error
       if ex.message.as(String).includes? "NOSCRIPT"
