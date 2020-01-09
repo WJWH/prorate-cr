@@ -5,7 +5,6 @@ crystal:
 services:
 - redis
 
-dist: trusty # https://docs.travis-ci.com/user/trusty-ci-environment/
 sudo: false
 
 script:
