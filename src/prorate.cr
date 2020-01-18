@@ -2,8 +2,7 @@ require "./prorate/*"
 require "redis"
 require "digest"
 
-# TODO: Write documentation for `Prorate`
-module Prorate  
+module Prorate
   class Throttled < Exception
     getter retry_in_seconds : Int64
     def initialize(try_again_in : Int64)
@@ -35,7 +34,7 @@ module Prorate
   class Throttle
     getter discriminators
     
-    def initialize(name : String, bucket_capacity : Int32, leak_rate : Int32, block_for : Int32, redis : Redis::PooledClient = Redis::PooledClient.new)
+    def initialize(name : String, bucket_capacity : Int32, leak_rate : Float32, block_for : Int32, redis : Redis::PooledClient = Redis::PooledClient.new)
       @name = name
       @bucket_capacity = bucket_capacity
       @leak_rate = leak_rate
@@ -71,7 +70,7 @@ module Prorate
   end
 
   # A small convenience method:
-  def with_throttle(name : String, bucket_capacity : Int32, leak_rate : Int32, block_for : Int32)
+  def self.with_throttle(name : String, bucket_capacity : Int32, leak_rate : Float32, block_for : Int32)
     t = Prorate::Throttle.new(name: name, bucket_capacity: bucket_capacity, leak_rate: leak_rate, block_for: block_for)
     yield t
     return t.throttle!
