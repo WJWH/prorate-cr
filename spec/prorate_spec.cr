@@ -94,4 +94,27 @@ describe Prorate do
       r.get(block_key).should be_nil
     end
   end
+  
+  context "when using with_throttle!" do
+    Spec.before_each do
+      Redis.new.flushall
+    end
+    
+    it "allows calls if the bucket is not yet full" do
+      Prorate.with_throttle(name: "test", bucket_capacity: 10, leak_rate: 10, block_for: 120) do |t|
+        t << "foo"
+      end
+    end
+    
+    it "raises if the bucket does not have capacity" do
+      expect_raises(Prorate::Throttled) {
+        Prorate.with_throttle(name: "test", bucket_capacity: 1, leak_rate: 0.1, block_for: 120) do |t|
+          t << "foo"
+        end
+        Prorate.with_throttle(name: "test", bucket_capacity: 1, leak_rate: 0.1, block_for: 120) do |t|
+          t << "foo"
+        end
+      }
+    end
+  end
 end
